@@ -12,12 +12,6 @@ wheelbase and therefore use the pedal travel or pressure linearly
 
 # Getting started
 
-You will need to copy or symlink the lib/g29 directory into the ardunio libraries 
-
-e.g.
-
-    ln -s ~/Documents/Arduino/g29-pedal-usb-controller/lib/g29 ~/Documents/Arduino/libraries/g29
-
 If you see type errors for the HID, check the board type supports HID
 
 

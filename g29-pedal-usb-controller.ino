@@ -1,38 +1,123 @@
+/**
+ * 
 
-#include <g29.h>
+ */
 
+#include "g29.h"
+#include "pedal.h"
 
-G29Pedals g29;
-uint16_t a = 0;
+// set the pins here
+Pedal       brake(A0, 0);
+Pedal accelerator(A1, 1);
 
-int aPin = A7;
-int bPin = A8;
+enum State {
+    STATE_REPORT,
+    STATE_CALIBRATE_START,
+    STATE_CALIBRATE,
+    STATE_CALIBRATE_END,
+    STATE_MONITOR
+};
 
-uint16_t aVal = 0;
-uint16_t bVal = 0;
+G29 g29;
+
+int cmd;
+enum State state = STATE_REPORT;
+
+void debug() {
+    Serial.print("amin=");
+    Serial.print(accelerator.vmin(), DEC);
+    Serial.print(" amax=");
+    Serial.print(accelerator.vmax(), DEC);
+    Serial.print(" bmin=");
+    Serial.print(brake.vmin(), DEC);
+    Serial.print(" bmax=");
+    Serial.print(brake.vmax(), DEC);
+    Serial.println();
+}
 
 void setup() {
-  // put your setup code here, to run once:
-  Serial.begin(9600);
+
+    Serial.begin(9600);
+    while(!Serial);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  g29.begin();
 
-  aVal = analogRead(aPin);
-  bVal = analogRead(bPin);
+    cmd = 0;  // reset the command
+    if(Serial.available()) {
+        cmd = Serial.read();
+        Serial.print("Command: 0x");
+        Serial.print(cmd, HEX);
+        Serial.println();
+    }
+    
+    switch(cmd) {
+        case 'd':
+        case 'D':
+            debug();
+            break;
+        case 'r':
+        case 'R':
+            state = STATE_REPORT;
+            break;
+        case 'm':
+        case 'M':
+            // monitor
+            state = STATE_MONITOR;
+            break;
+        case 'c':
+        case 'C':
+            if(state == STATE_CALIBRATE) {
+                state = STATE_CALIBRATE_END;
+            } else {
+                state = STATE_CALIBRATE_START;
+            }
+            break;
+        case 0x0a: 
+            // ignore the CR
+            break;
 
-  Serial.print("a=");
-  Serial.print(aVal);
-  Serial.print(" b=");
-  Serial.print(bVal);
-  Serial.println();
+    }
 
-  g29.setAccelerator(aVal);
-  g29.setBrake(bVal);
+
+    switch(state) {
+        case STATE_REPORT:
+            g29.begin();
+            g29.setAccelerator(accelerator.value());
+            g29.setBrake(brake.value());
+            g29.end();
+            break;
+        case STATE_MONITOR: 
+            Serial.print("a=");
+            Serial.print(accelerator.value());
+            Serial.print(" b=");
+            Serial.print(brake.value());
+            Serial.println();
+            delay(500);
+            break;
+        case STATE_CALIBRATE_START:
+            Serial.println("start calibration");
+            state = STATE_CALIBRATE;
+            accelerator.reset();
+            brake.reset();
+            break;
+        case STATE_CALIBRATE:
+            accelerator.calibrate();
+            brake.calibrate();
+            debug();
+            delay(500);
+            break;
+        case STATE_CALIBRATE_END:
+            Serial.println("end calibration");
+            accelerator.save();
+            brake.save();
+            state = STATE_REPORT;
+            break;
+
+        default:
+            break;
+    }
+
+
   
-  g29.end();
-  delay(500);
-
 }

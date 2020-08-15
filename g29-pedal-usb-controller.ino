@@ -59,6 +59,9 @@ void loop() {
         case 'r':
         case 'R':
             state = STATE_REPORT;
+            // reload the calibration in case we didn't finish it
+            accelerator.load();
+            brake.load();
             break;
         case 'm':
         case 'M':
@@ -78,7 +81,6 @@ void loop() {
             break;
 
     }
-
 
     switch(state) {
         case STATE_REPORT:

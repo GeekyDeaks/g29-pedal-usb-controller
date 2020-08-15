@@ -7,33 +7,29 @@
 #include "EEPROM.h"
 #include "pedal.h"
 
-#define MAX_VAL 1024
+#define MAX_VAL 1023
 
 Pedal::Pedal (uint16_t pin, uint16_t index) {
 
     _pin = pin;
     _addr = index * sizeof(pedal_calibration_struct);
-
-    // load up the current min/max
-    EEPROM.get(_addr, _cal);
-    // do some sanity checking
-    if(_cal.vmax > MAX_VAL) _cal.vmax = MAX_VAL;
-    if(_cal.vmin > _cal.vmax) _cal.vmin = _cal.vmax;
+    load();
 
 }
 
 uint16_t Pedal::value(void) {
     uint16_t val = analogRead(_pin);
 
-    if(val < _cal.vmin) val = _cal.vmin;
-    if(val > _cal.vmax) val = _cal.vmax;
-
+    val = constrain(val, _cal.vmin, _cal.vmax);
     val -= _cal.vmin;
+
     // manipulate the value based on min/max
     uint16_t range = _cal.vmax - _cal.vmin;
+    // sanity check
     if(range == 0) range = 1;
-    uint16_t mul = (MAX_VAL << 4) / range;
-    return (val * mul) >> 4;
+
+    uint16_t mul = (MAX_VAL << 6) / range;
+    return (val * mul) >> 6;
 }
 
 void Pedal::reset(void) {
@@ -50,8 +46,24 @@ void Pedal::calibrate(void) {
 
 }
 
+void Pedal::load(void) {
+    // load up the current min/max
+    EEPROM.get(_addr, _cal);
+    // do some sanity checking
+    if(_cal.vmax > MAX_VAL || _cal.vmin > _cal.vmax) {
+        reset();
+    }
+}
+
 void Pedal::save(void) {
-    EEPROM.put(_addr, _cal);
+
+    pedal_calibration_struct t;
+    EEPROM.get(_addr, t);
+    // check if we really need to update
+    if(t.vmax != _cal.vmax || t.vmin != _cal.vmin) {
+        EEPROM.put(_addr, _cal);
+    }
+    
 }
 
 uint16_t Pedal::vmin(void) {

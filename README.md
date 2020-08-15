@@ -18,3 +18,5 @@ If you see type errors for the HID, check the board type supports HID
 # appendix
 
 https://usb.org/sites/default/files/hut1_2.pdf
+
+https://www.thesycon.de/eng/usb_descriptordumper.shtml

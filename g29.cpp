@@ -16,7 +16,7 @@ G29::G29(void) {
         0x05, 0x01,           // USAGE_PAGE (Generic Desktop)
         0x09, 0x04,           // USAGE (Joystick)
 
-        0x26, 0x00, 0x04,     // LOGICAL_MAXIMUM (1024)    
+        0x26, 0xFF, 0x03,     // LOGICAL_MAXIMUM (1023)    
         0x75, 0x10,           // REPORT_SIZE (16)
 
         0xA1, 0x01,           // COLLECTION (Application)

@@ -12,9 +12,7 @@ Pedal accelerator(A1, 1);
 
 enum State {
     STATE_REPORT,
-    STATE_CALIBRATE_START,
     STATE_CALIBRATE,
-    STATE_CALIBRATE_END,
     STATE_MONITOR
 };
 
@@ -23,7 +21,7 @@ G29 g29;
 int cmd;
 enum State state = STATE_REPORT;
 
-void debug() {
+void dump_cal() {
     Serial.print("amin=");
     Serial.print(accelerator.vmin(), DEC);
     Serial.print(" amax=");
@@ -46,15 +44,12 @@ void loop() {
     cmd = 0;  // reset the command
     if(Serial.available()) {
         cmd = Serial.read();
-        Serial.print("Command: 0x");
-        Serial.print(cmd, HEX);
-        Serial.println();
     }
     
     switch(cmd) {
         case 'd':
         case 'D':
-            debug();
+            dump_cal();
             break;
         case 'r':
         case 'R':
@@ -62,20 +57,41 @@ void loop() {
             // reload the calibration in case we didn't finish it
             accelerator.load();
             brake.load();
+            Serial.println("USB HID Reporting");
             break;
         case 'm':
         case 'M':
             // monitor
             state = STATE_MONITOR;
+            // reload the calibration in case we didn't finish it
+            accelerator.load();
+            brake.load();
+            Serial.println("Monitoring");
             break;
         case 'c':
         case 'C':
+            state = STATE_CALIBRATE;
+            Serial.println("Starting Calibration");
+            accelerator.reset();
+            brake.reset();
+            break;
+        case 's':
+        case 'S':
             if(state == STATE_CALIBRATE) {
-                state = STATE_CALIBRATE_END;
-            } else {
-                state = STATE_CALIBRATE_START;
+                Serial.println("Saving Calibration");
+                accelerator.save();
+                brake.save();
+                state = STATE_REPORT;
             }
             break;
+        case 'h':
+        case 'H':
+        case '?':
+            Serial.println("(M)onitor");
+            Serial.println("(D)ump calibration");
+            Serial.println("(C)alibrate");
+            Serial.println("(S)ave calibration");
+            Serial.println("(R)eport HID");
         case 0x0a: 
             // ignore the CR
             break;
@@ -97,25 +113,12 @@ void loop() {
             Serial.println();
             delay(500);
             break;
-        case STATE_CALIBRATE_START:
-            Serial.println("start calibration");
-            state = STATE_CALIBRATE;
-            accelerator.reset();
-            brake.reset();
-            break;
         case STATE_CALIBRATE:
             accelerator.calibrate();
             brake.calibrate();
-            debug();
+            dump_cal();
             delay(500);
             break;
-        case STATE_CALIBRATE_END:
-            Serial.println("end calibration");
-            accelerator.save();
-            brake.save();
-            state = STATE_REPORT;
-            break;
-
         default:
             break;
     }

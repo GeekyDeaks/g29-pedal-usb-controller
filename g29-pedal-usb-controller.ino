@@ -3,7 +3,7 @@
 
  */
 
-#include "g29.h"
+#include "controller.h"
 #include "pedal.h"
 
 // set the pins here
@@ -16,7 +16,7 @@ enum State {
     STATE_MONITOR
 };
 
-G29 g29;
+Controller controller;
 
 int cmd;
 enum State state = STATE_REPORT;
@@ -100,10 +100,10 @@ void loop() {
 
     switch(state) {
         case STATE_REPORT:
-            g29.begin();
-            g29.setAccelerator(accelerator.value());
-            g29.setBrake(brake.value());
-            g29.end();
+            controller.begin();
+            controller.setAccelerator(accelerator.value());
+            controller.setBrake(brake.value());
+            controller.end();
             break;
         case STATE_MONITOR: 
             Serial.print("a=");

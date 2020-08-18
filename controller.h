@@ -12,15 +12,15 @@ typedef struct {
     uint16_t brake;
     uint16_t clutch;
 
-} g29_report_struct;
+} report_struct;
 
-class G29 {
+class Controller {
     private:
-        g29_report_struct report;
+        report_struct report;
         boolean changed;
 
     public: 
-        G29(void);
+        Controller(void);
 
         void setAccelerator(uint16_t v);
         void setBrake(uint16_t v);

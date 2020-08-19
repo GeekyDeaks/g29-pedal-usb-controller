@@ -1,16 +1,16 @@
 /*
- * g29.cpp
+ * controller.cpp
  * 
- * Simple HID abstraction to expose 3 generic axis
+ * Simple HID abstraction to expose 3 pedal axis
  */
 
 
-#include "g29.h"
+#include "controller.h"
 #include "HID.h"
 
 #define REPORT_ID 0x04
 
-G29::G29(void) {
+Controller::Controller(void) {
 
     static const uint8_t ReportDescriptor[] PROGMEM = {
         0x05, 0x01,           // USAGE_PAGE (Generic Desktop)
@@ -56,25 +56,25 @@ G29::G29(void) {
     changed = true;
 }
 
-void G29::begin() {
+void Controller::begin() {
     changed = false;
 }
 
-void G29::end() {
-    HID().SendReport(REPORT_ID, &report, sizeof(g29_report_struct));
+void Controller::end() {
+    HID().SendReport(REPORT_ID, &report, sizeof(report_struct));
 }
 
-void G29::setAccelerator(uint16_t v) {
+void Controller::setAccelerator(uint16_t v) {
     report.accelerator = v;
     changed = true;
 }
 
-void G29::setBrake(uint16_t v) {
+void Controller::setBrake(uint16_t v) {
     report.brake = v;
     changed = true;
 }
 
-void G29::setClutch(uint16_t v) {
+void Controller::setClutch(uint16_t v) {
     report.clutch = v;
     changed = true;
 }

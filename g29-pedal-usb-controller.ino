@@ -22,10 +22,14 @@ int cmd;
 enum State state = STATE_REPORT;
 
 void dump_cal() {
-    Serial.print("amin=");
+    Serial.print("a=");
+    Serial.print(accelerator.value(), DEC);
+    Serial.print(" amin=");
     Serial.print(accelerator.vmin(), DEC);
     Serial.print(" amax=");
     Serial.print(accelerator.vmax(), DEC);
+    Serial.print(" b=");
+    Serial.print(brake.value(), DEC);
     Serial.print(" bmin=");
     Serial.print(brake.vmin(), DEC);
     Serial.print(" bmax=");

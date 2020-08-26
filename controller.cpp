@@ -49,11 +49,7 @@ Controller::Controller(void) {
     static HIDSubDescriptor descriptor(ReportDescriptor, sizeof(ReportDescriptor));
     HID().AppendDescriptor(&descriptor);
 
-    report.accelerator = 10;
-    report.brake = 20;
-    report.clutch = 30;
-
-    changed = true;
+    changed = false;
 }
 
 void Controller::begin() {
@@ -61,20 +57,29 @@ void Controller::begin() {
 }
 
 void Controller::end() {
-    HID().SendReport(REPORT_ID, &report, sizeof(report_struct));
+    if(changed) {
+        HID().SendReport(REPORT_ID, &report, sizeof(report_struct));
+    }
 }
 
 void Controller::setAccelerator(uint16_t v) {
-    report.accelerator = v;
-    changed = true;
+    if(report.accelerator != v)  {
+        report.accelerator = v;
+        changed = true;
+    }
 }
 
 void Controller::setBrake(uint16_t v) {
-    report.brake = v;
-    changed = true;
+    if(report.brake != v) {
+        report.brake = v;
+        changed = true;
+    }
 }
 
 void Controller::setClutch(uint16_t v) {
-    report.clutch = v;
-    changed = true;
+    if(report.clutch != v) {
+        report.clutch = v;
+        changed = true;
+    }
+
 }

@@ -13,7 +13,8 @@ Pedal accelerator(A1, 1);
 enum State {
     STATE_REPORT,
     STATE_CALIBRATE,
-    STATE_MONITOR
+    STATE_MONITOR,
+    STATE_PLOT
 };
 
 Controller controller;
@@ -40,6 +41,8 @@ void dump_cal() {
 void setup() {
 
     Serial.begin(9600);
+    accelerator.load();
+    brake.load();
     //while(!Serial);
 }
 
@@ -48,6 +51,8 @@ void loop() {
     cmd = 0;  // reset the command
     if(Serial.available()) {
         cmd = Serial.read();
+        Serial.print("Serial.read()=");
+        Serial.println(cmd);
     }
     
     switch(cmd) {
@@ -72,6 +77,15 @@ void loop() {
             brake.load();
             Serial.println("Monitoring");
             break;
+        case 'p':
+        case 'P':
+            // plot
+            state = STATE_PLOT;
+            // reload the calibration in case we didn't finish it
+            accelerator.load();
+            brake.load();
+            Serial.println("Plotting");
+            break;
         case 'c':
         case 'C':
             state = STATE_CALIBRATE;
@@ -92,6 +106,7 @@ void loop() {
         case 'H':
         case '?':
             Serial.println("(M)onitor");
+            Serial.println("(P)lot accelerator/brake/clutch");
             Serial.println("(D)ump calibration");
             Serial.println("(C)alibrate");
             Serial.println("(S)ave calibration");
@@ -116,6 +131,13 @@ void loop() {
             Serial.print(brake.value());
             Serial.println();
             delay(500);
+            break;
+         case STATE_PLOT: 
+            Serial.print(accelerator.raw());
+            Serial.print("\t");
+            Serial.print(brake.raw());
+            Serial.println();
+            delay(50);
             break;
         case STATE_CALIBRATE:
             accelerator.calibrate();

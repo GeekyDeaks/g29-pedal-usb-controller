@@ -11,6 +11,7 @@ typedef struct {
     uint16_t accelerator;
     uint16_t brake;
     uint16_t clutch;
+    uint16_t rudder;
 
 } report_struct;
 
@@ -25,6 +26,7 @@ class Controller {
         void setAccelerator(uint16_t v);
         void setBrake(uint16_t v);
         void setClutch(uint16_t v);
+        void setRudder(uint16_t v);
 
         void begin();
         void end();

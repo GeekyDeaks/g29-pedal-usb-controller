@@ -37,10 +37,11 @@ Controller::Controller(void) {
         // so we have to resort to using the X axis
         
         0x05, 0x01,           //   USAGE_PAGE (Generic Desktop)
-        0x95, 0x01,           //   REPORT_COUNT (1)
-
+        0x95, 0x02,           //   REPORT_COUNT (1)
+        
         0xA1, 0x00,           //   COLLECTION (Physical
         0x09, 0x30,           //     USAGE (X) - clutch
+        0x09, 0x31,
         0x81, 0x02,           //     INPUT (Data,Var,Abs)
         0xC0,                 //   END_COLLECTION
         
@@ -79,6 +80,14 @@ void Controller::setBrake(uint16_t v) {
 void Controller::setClutch(uint16_t v) {
     if(report.clutch != v) {
         report.clutch = v;
+        changed = true;
+    }
+
+}
+
+void Controller::setRudder(uint16_t v) {
+    if(report.rudder != v) {
+        report.rudder = v;
         changed = true;
     }
 

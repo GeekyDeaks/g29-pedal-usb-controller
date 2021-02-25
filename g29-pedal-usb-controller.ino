@@ -9,6 +9,7 @@
 // set the pins here
 Pedal       brake(A0, 0);
 Pedal accelerator(A1, 1);
+Pedal      clutch(A2, 2);
 
 enum State {
     STATE_REPORT,
@@ -34,6 +35,12 @@ void dump_cal() {
     Serial.print(brake.vmin(), DEC);
     Serial.print(" bmax=");
     Serial.print(brake.vmax(), DEC);
+    Serial.print(" c=");
+    Serial.print(clutch.value(), DEC);
+    Serial.print(" cmin=");
+    Serial.print(clutch.vmin(), DEC);
+    Serial.print(" cmax=");
+    Serial.print(clutch.vmax(), DEC);
     Serial.println();
 }
 
@@ -61,6 +68,7 @@ void loop() {
             // reload the calibration in case we didn't finish it
             accelerator.load();
             brake.load();
+            clutch.load();
             Serial.println("USB HID Reporting");
             break;
         case 'm':
@@ -70,6 +78,7 @@ void loop() {
             // reload the calibration in case we didn't finish it
             accelerator.load();
             brake.load();
+            clutch.load();
             Serial.println("Monitoring");
             break;
         case 'c':
@@ -78,6 +87,7 @@ void loop() {
             Serial.println("Starting Calibration");
             accelerator.reset();
             brake.reset();
+            clutch.reset();
             break;
         case 's':
         case 'S':
@@ -85,6 +95,7 @@ void loop() {
                 Serial.println("Saving Calibration");
                 accelerator.save();
                 brake.save();
+                clutch.save();
                 state = STATE_REPORT;
             }
             break;
@@ -107,6 +118,9 @@ void loop() {
             controller.begin();
             controller.setAccelerator(accelerator.value());
             controller.setBrake(brake.value());
+            //controller.setClutch(clutch.value());
+            controller.setClutch( (1024 - accelerator.value() + clutch.value()) /2 );
+            controller.setRudder( (1024 - accelerator.value() + clutch.value()) /2 );
             controller.end();
             break;
         case STATE_MONITOR: 
@@ -114,12 +128,15 @@ void loop() {
             Serial.print(accelerator.value());
             Serial.print(" b=");
             Serial.print(brake.value());
+            Serial.print(" c=");
+            Serial.print(clutch.value());
             Serial.println();
             delay(500);
             break;
         case STATE_CALIBRATE:
             accelerator.calibrate();
             brake.calibrate();
+            clutch.calibrate();
             dump_cal();
             delay(500);
             break;

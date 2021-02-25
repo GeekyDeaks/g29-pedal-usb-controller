@@ -32,6 +32,11 @@ uint16_t Pedal::value(void) {
     return (val * mul) >> 6;
 }
 
+uint16_t Pedal::raw(void) {
+    uint16_t val = analogRead(_pin);
+    return val;
+}
+
 void Pedal::reset(void) {
     _cal.vmin = MAX_VAL;
     _cal.vmax = 0;

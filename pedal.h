@@ -24,6 +24,7 @@ class Pedal {
         void reset(void);
         void calibrate(void);
         uint16_t value(void);
+        uint16_t raw(void);
         void save(void);
         void load(void);
         uint16_t vmin(void);

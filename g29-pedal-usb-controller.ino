@@ -133,9 +133,8 @@ void loop() {
             controller.begin();
             controller.setAccelerator(accelerator.value());
             controller.setBrake(brake.value());
-            //controller.setClutch(clutch.value());
-            controller.setClutch( (1024 - accelerator.value() + clutch.value()) /2 );
-            controller.setRudder( (1024 - accelerator.value() + clutch.value()) /2 );
+            controller.setClutch(clutch.value());
+            controller.setRudder( ( clutch.value() / 2) - (accelerator.value() /2)  );
             controller.end();
             break;
         case STATE_MONITOR: 

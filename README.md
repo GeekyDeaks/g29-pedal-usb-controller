@@ -21,10 +21,13 @@ listend for characters on the serial port in order to switch to different
 modes
 
     C   Start Calibration
-    S   Save Calibration
-    M   Monitor Values
     D   Dump Calibration Values
+    M   Monitor Values
+    P   Output values for plotting
     R   USB HID Reporting
+    S   Save Calibration
+    Y   Toggle yaw mode to allow setup of clutch and throttle for rudder
+        0 = all inputs, 1 = clutch and throttle in yaw mode, 2 = clutch and throttle normal
 
 # appendix
 

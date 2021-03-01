@@ -22,6 +22,7 @@ Controller controller;
 
 int cmd;
 enum State state = STATE_REPORT;
+int yawMode = 0; // all inputs reported
 
 void dump_cal() {
     Serial.print("a=");
@@ -113,15 +114,23 @@ void loop() {
                 state = STATE_REPORT;
             }
             break;
+        case 'y':
+        case 'Y':
+          yawMode = (yawMode + 1) % 3;
+          Serial.print("Yaw mode: ");
+          Serial.println(yawMode);
+          break;
         case 'h':
         case 'H':
         case '?':
+            Serial.println("(C)alibrate");
+            Serial.println("(D)ump calibration");
             Serial.println("(M)onitor");
             Serial.println("(P)lot accelerator/brake/clutch");
-            Serial.println("(D)ump calibration");
-            Serial.println("(C)alibrate");
-            Serial.println("(S)ave calibration");
             Serial.println("(R)eport HID");
+            Serial.println("(S)ave calibration");
+            Serial.println("(Y)was mode toggle");
+
         case 0x0a: 
             // ignore the CR
             break;
@@ -131,10 +140,15 @@ void loop() {
     switch(state) {
         case STATE_REPORT:
             controller.begin();
-            controller.setAccelerator(accelerator.value());
-            controller.setBrake(brake.value());
-            controller.setClutch(clutch.value());
-            controller.setRudder( ( clutch.value() / 2) - (accelerator.value() /2)  );
+            if(yawMode == 0 || yawMode == 1) {
+              controller.setRudder( ( clutch.value() / 2) - (accelerator.value() /2)  );
+            } 
+            if(yawMode == 0 || yawMode == 2) {
+              controller.setAccelerator(accelerator.value());
+              controller.setBrake(brake.value());
+              controller.setClutch(clutch.value());
+            }
+            
             controller.end();
             break;
         case STATE_MONITOR: 

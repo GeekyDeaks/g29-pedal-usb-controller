@@ -47,8 +47,8 @@ Controller::Controller(void) {
         0x09, 0x30,           //     USAGE (X) - clutch
         0x81, 0x02,           //     INPUT (Data,Var,Abs)
         // rudder
-        0x16, 0x01, 0xFE,     //     LOGICAL_MINIMUM (-511)
-        0x26, 0xFF, 0x01,     //     LOGICAL_MAXIMUM (512)
+        0x16, 0x01, 0x00,     //     LOGICAL_MINIMUM (-511)
+        0x26, 0xFF, 0x03,     //     LOGICAL_MAXIMUM (512)
         0x95, 0x01,           //     REPORT_COUNT (1)
         0x09, 0x32,           //     USAGE (Z) - rudder (Y is accelerator)
         0x81, 0x02,           //     INPUT (Data,Var,Abs)

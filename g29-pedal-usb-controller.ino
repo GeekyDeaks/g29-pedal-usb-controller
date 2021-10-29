@@ -118,7 +118,20 @@ void loop() {
         case 'Y':
           yawMode = (yawMode + 1) % 3;
           Serial.print("Yaw mode: ");
-          Serial.println(yawMode);
+          switch(yawMode){
+            case 0:
+              Serial.println("Yaw and Pedals");
+              break;
+            case 1:
+              Serial.println("Yaw only");
+              break;
+            case 2:
+              Serial.println("Pedals only");
+              break;
+            default:
+              Serial.println(yawMode);
+              break;
+          }
           break;
         case 'h':
         case 'H':
@@ -141,7 +154,7 @@ void loop() {
         case STATE_REPORT:
             controller.begin();
             if(yawMode == 0 || yawMode == 1) {
-              controller.setRudder( ( clutch.value() / 2) - (accelerator.value() /2)  );
+              controller.setRudder( 512 + ( clutch.value() / 2) - (accelerator.value() /2)  );
             } 
             if(yawMode == 0 || yawMode == 2) {
               controller.setAccelerator(accelerator.value());

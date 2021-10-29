@@ -59,8 +59,6 @@ void loop() {
     cmd = 0;  // reset the command
     if(Serial.available()) {
         cmd = Serial.read();
-        Serial.print("Serial.read()=");
-        Serial.println(cmd);
     }
     
     switch(cmd) {
@@ -120,10 +118,10 @@ void loop() {
           Serial.print("Yaw mode: ");
           switch(yawMode){
             case 0:
-              Serial.println("Yaw and Pedals");
+              Serial.println("Rudder and Pedals");
               break;
             case 1:
-              Serial.println("Yaw only");
+              Serial.println("Rudder only");
               break;
             case 2:
               Serial.println("Pedals only");
@@ -142,11 +140,16 @@ void loop() {
             Serial.println("(P)lot accelerator/brake/clutch");
             Serial.println("(R)eport HID");
             Serial.println("(S)ave calibration");
-            Serial.println("(Y)was mode toggle");
+            Serial.println("(Y)aw mode toggle");
 
         case 0x0a: 
-            // ignore the CR
+        case 0x00:
+            // ignore the CR and 0
             break;
+            
+        default:
+            Serial.print("Unknown cmd: ");
+            Serial.println(cmd);
 
     }
 
